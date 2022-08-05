@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="/expensewallet/img/favicon.png">
+    <title>
+        Expense Wallet App - @ViewBag.Title
+    </title>
+    <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css" />
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <!-- Nucleo Icons -->
+    <link href="/expensewallet/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="/expensewallet/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="/expensewallet/css/material-dashboard.css?v=3.0.4" rel="stylesheet" />
+
+
+</head>
+<body class="g-sidenav-show bg-gray-200">
+    @{
+        await Html.RenderPartialAsync("/Views/Shared/Components/_Sidebar.cshtml");
+    }
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        @{
+            await Html.RenderPartialAsync("/Views/Shared/Components/_Nav.cshtml");
+        }
+        <div class="container-fluid py-4">
+            @RenderBody()
+
+            @{
+                await Html.RenderPartialAsync("/Views/Shared/Components/_Footer.cshtml");
+            }
+        </div>
+    </main>
+
+    <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

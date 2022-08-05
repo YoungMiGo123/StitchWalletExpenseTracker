@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseWallet", "ExpenseWallet\ExpenseWallet.csproj", "{64C111F5-F7A3-4859-8C97-D92F5FD30F8C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4ED2D47A-5BF5-4FAC-AFBF-23786DF17744}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.ExpenseWallet", "Core.ExpenseWallet\Core.ExpenseWallet.csproj", "{EEBA44BF-C8E7-4490-B618-6D020FBC70FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseWalletTests", "ExpenseWalletTests\ExpenseWalletTests.csproj", "{607620B8-8D00-4E20-A137-A5982C2AD104}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64C111F5-F7A3-4859-8C97-D92F5FD30F8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64C111F5-F7A3-4859-8C97-D92F5FD30F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64C111F5-F7A3-4859-8C97-D92F5FD30F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64C111F5-F7A3-4859-8C97-D92F5FD30F8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEBA44BF-C8E7-4490-B618-6D020FBC70FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEBA44BF-C8E7-4490-B618-6D020FBC70FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEBA44BF-C8E7-4490-B618-6D020FBC70FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEBA44BF-C8E7-4490-B618-6D020FBC70FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{607620B8-8D00-4E20-A137-A5982C2AD104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{607620B8-8D00-4E20-A137-A5982C2AD104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{607620B8-8D00-4E20-A137-A5982C2AD104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{607620B8-8D00-4E20-A137-A5982C2AD104}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{64C111F5-F7A3-4859-8C97-D92F5FD30F8C} = {4ED2D47A-5BF5-4FAC-AFBF-23786DF17744}
+		{EEBA44BF-C8E7-4490-B618-6D020FBC70FE} = {4ED2D47A-5BF5-4FAC-AFBF-23786DF17744}
+		{607620B8-8D00-4E20-A137-A5982C2AD104} = {4ED2D47A-5BF5-4FAC-AFBF-23786DF17744}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3976E07-F0FE-4577-9AF7-21BE439CCAE2}
+	EndGlobalSection
+EndGlobal

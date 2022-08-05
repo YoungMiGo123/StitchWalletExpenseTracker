@@ -1,0 +1,158 @@
+﻿@using Core.ExpenseWallet.Data
+@model TransactionCategoryView
+@{
+    var defaultProbability = 0;
+     ViewBag.Title = "Expenses";
+}
+
+<div class="row" style="margin-bottom:30px;">
+    <div class="col-12">
+        <h1 style="text-align:center;">
+            Expense Break Down
+        </h1>
+    </div>
+    <hr style="height: 2px; border: 2px solid #344767;"/>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Top Spending Categories</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-0" id="spendingCategory">
+                        <thead> 
+                            <tr style="text-align:center">
+                                <th></th>
+                                <th>Id</th>
+                                <th>Desciption</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model.TopSpendingCategories)
+                            {
+                                <tr style="text-align:center">
+                                    <td>
+                                        <div>
+                                            <span style="font-size:12px; padding:5px;"><i class="fa fa-list-alt" aria-hidden="true"></i></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">@category.id</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">@category.description</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">@DateTime.Now.ToString("dd-MM-yyy")</h6>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Expense Breakdown By Category</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-0" id="expenseByCategory">
+                        <thead>
+                            <tr style="text-align:center">
+                                <th></th>
+                                <th>Account</th>
+                                <th>Expense Category</th>
+                                <th>Probability</th>
+                                <th>Currency</th>
+                                <th>Amout</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var account in Model?.BankAccounts ?? new List<BankAccount>())
+                            {
+                                @foreach (var edge in account?.transactions?.edges ?? new List<Edge>())
+                                {
+                                    var transactionCat = edge?.node;
+                                    <tr style="text-align:center;">
+
+                                        <td>
+                                            <div>
+                                                <span style="font-size:12px;padding:5px;"><i class="fa fa-list-alt" aria-hidden="true"></i></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-0 text-sm">@account?.name</h6>
+                                        </td>
+                                        <td>
+
+                                            @if (string.IsNullOrEmpty(@transactionCat?.category?.description))
+                                            {
+                                                <h6 class="mb-0 text-sm"> Unknown </h6>
+                                            }
+                                            else
+                                            {
+                                                <h6 class="mb-0 text-sm">@transactionCat.category.description </h6>
+                                            }
+
+                                        </td>
+                                        <td>
+                                            @if(!string.IsNullOrEmpty(transactionCat?.category?.probability))
+                                            {
+                                                <h6 class="mb-0 text-sm">@transactionCat?.category?.probability</h6>
+                                            }
+                                            else
+                                            {
+                                                 <h6 class="mb-0 text-sm">@defaultProbability</h6>
+                                            }
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-0 text-sm">@transactionCat?.amount?.currency</h6>
+
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-0 text-sm" style="text-align:center;">@transactionCat?.amount?.quantity</h6>
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-0 text-sm"> @transactionCat?.date.ToString("dd-MM-yyyy")</h6>
+                                        </td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function() {
+            $('#expenseByCategory').dataTable();
+            $('#spendingCategory').dataTable();
+        });
+    </script>
+}
