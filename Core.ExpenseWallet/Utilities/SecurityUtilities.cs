@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -34,16 +35,30 @@ namespace Core.ExpenseWallet
         {
             return System.Convert.ToBase64String(input).Replace("=", "").Replace('+', '-').Replace('/', '_');
         }
+        public static bool IsValidReference(string reference)
+        {
+            if (string.IsNullOrEmpty(reference)) { return false; }
+            if (reference.Any(x => !(char.IsDigit(x) || char.IsLetter(x)))) { return false; }
+            return true;
+        }
+        public static bool IsValidAmount(string amount)
+        {
+            if (string.IsNullOrEmpty(amount)) { return false; }
+            if (amount.Any(x => !(char.IsNumber(x) || x == '.'))) { return false; }
+            var amt = Convert.ToDouble(amount, CultureInfo.InvariantCulture);
+            if(amt < 0.01) { return false; }
+            return true;
+        }
         public static string JsonFilePath = "StitchSession.json";
         public static string CodeJsonFilePath = "CodeToken.json";
     }
 
-    public class VerifiedChallenge 
+    public class VerifiedChallenge
     {
         public string Verfier { get; set; }
         public string Challenge { get; set; }
     }
 
-  
+
 
 }

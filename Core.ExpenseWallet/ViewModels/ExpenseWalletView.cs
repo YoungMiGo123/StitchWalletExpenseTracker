@@ -14,5 +14,6 @@ namespace Core.ExpenseWallet.ViewModels
         public List<Node> DebitOrders { get; set; }
         public List<Node> SalaryInformation { get; set; }
         public Income Income { get; set; }
+        public double FloatBalance { get; set; }
     }
 }

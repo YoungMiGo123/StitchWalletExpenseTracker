@@ -1,0 +1,120 @@
+﻿@using Core.ExpenseWallet.Utilities
+@model TopUpWalletView
+
+<div class="row" style="margin-bottom:30px;">
+
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-3 pt-2">
+                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                    <i class="material-icons opacity-10">weekend</i>
+                </div>
+                <div class="text-end pt-1">
+                    <p class="text-sm mb-0 text-capitalize">Wallet Balance</p>
+                    <h4 class="mb-0">@Model.FloatBalance</h4>
+                </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+                <p class="mb-0"><span class="text-success text-sm font-weight-bolder">Currency </span>@Default.DefaultCurrency</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <a asp-action="TopUp" asp-controller="StitchService">
+            <div class="card">
+                <div class="card-header p-3 pt-2">
+                    <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                        <i class="material-icons opacity-10">+</i>
+                    </div>
+                    <div class="text-end pt-1">
+                        <p class="text-sm mb-0 text-capitalize"></p>
+                        <h4 class="mb-0">Top Up Wallet</h4>
+                    </div>
+                </div>
+                <hr class="dark horizontal my-0">
+                <div class="card-footer p-3">
+                    <p class="mb-0"><span class="text-success text-sm font-weight-bolder">Add Funds </span>To Your Wallet</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12">
+        <h1 style="text-align:center;">
+            Wallet Top Ups
+        </h1>
+    </div>
+
+    <hr style="height: 2px; border: 2px solid #344767;" />
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Top Ups</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-0" id="floatPaymentTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th style="text-align:center">Id</th>
+                                <th style="text-align:center">Currency</th>
+                                <th style="text-align:center">Amount</th>
+                                <th style="text-align:center">Balance</th>
+                                <th style="text-align:center">Reference</th>
+                                <th style="text-align:center">Created Date</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var floatPayment in Model.Float.FloatPayments)
+                            {
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <img src="/expensewallet/img/bank-account.png" class="avatar avatar-sm rounded-circle me-2" alt="spotify" style="padding:5px;">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Id</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Currency</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Amount</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Balance</h6>
+
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Reference</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.CreatedDate</h6>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function() {
+            $('#floatPaymentTable').dataTable();
+        });
+    </script>
+}

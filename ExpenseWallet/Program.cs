@@ -17,6 +17,7 @@ builder.Services.AddSingleton<IStitchSettings>(x => stitchSettings);
 builder.Services.AddSingleton<IUrlService, UrlService>();
 builder.Services.AddSingleton<IHttpService, HttpService>();
 builder.Services.AddSingleton<ITokenBuilder, TokenBuilder>();
+builder.Services.AddSingleton<IFloatService, FloatService>();
 builder.Services.AddSingleton<IWalletService, WalletService>();
 
 var app = builder.Build();

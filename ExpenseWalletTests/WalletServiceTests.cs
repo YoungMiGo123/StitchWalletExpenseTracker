@@ -8,15 +8,27 @@ namespace ExpenseWalletTests
     public class WalletServiceTests
     {
         private Mock<IWalletService> _walletService;
+        private Mock<IStitchSettings> _stitchSettings;
+        private Mock<IHttpService> _httpService;
+        private Mock<IInputOutputHelper> _ioHelper;
+        private Mock<IFloatService> _floatService;
+        private Mock<ITokenBuilder> _tokenBuilder;
+
         public WalletServiceTests()
         {
             _walletService = new Mock<IWalletService>();
+            _stitchSettings = new Mock<IStitchSettings>();
+            _httpService = new Mock<IHttpService>();
+            _ioHelper = new Mock<IInputOutputHelper>();
+            _floatService = new Mock<IFloatService>();
+            _tokenBuilder = new Mock<ITokenBuilder>();
         }
         [Test]
         public async Task GetExpenseWalletViewWithInvalidCode()
         {
             var code = string.Empty;
-            var walletService = new WalletService();
+            _ioHelper.Setup(x => x.Read(It.IsAny<string>())).Returns(string.Empty);
+            var walletService = new WalletService(_tokenBuilder.Object, _httpService.Object, _stitchSettings.Object, _ioHelper.Object, _floatService.Object);
             try
             {
                 var result = await walletService.GetExpenseWalletView(code);

@@ -11,5 +11,6 @@ namespace Core.ExpenseWallet.Interfaces
     {
         Task<ExpenseWalletView> GetExpenseWalletView(string code);
         Task<TransactionCategoryView> GetTransactionCategoryView();
+        TopUpWalletView GetTopUpWalletView();
     }
 }

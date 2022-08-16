@@ -1,4 +1,5 @@
 ﻿using Core.ExpenseWallet;
+using Core.ExpenseWallet.Data;
 using Core.ExpenseWallet.Models;
 using Newtonsoft.Json;
 using System;
@@ -26,6 +27,70 @@ namespace ExpenseWalletTests
         public static string GetCode()
         {
             return "sadfkasdjhgo;asidjgi[o0asfas";
+        }
+
+        public static FloatPayment GetValidFloatPayment()
+        {
+            return new FloatPayment()
+            {
+                Amount = 100.0,
+                Balance = 0,
+                CreatedDate = DateTime.UtcNow,
+                Currency = "ZAR",
+                Id = Guid.NewGuid(),
+                Reference = "REFx7RQgn"
+            };
+
+        }
+        public static FloatPayment GetInvalidFloatPayment()
+        {
+            return new FloatPayment()
+            {
+                Amount = -100.0,
+                Balance = 500,
+                CreatedDate = DateTime.UtcNow,
+                Currency = "ZAR",
+                Id = Guid.NewGuid(),
+                Reference = "REFx7RQgn"
+            };
+        }
+
+        public static Float GetValidFloat()
+        {
+            var _float = new Float()
+            {
+                FloatPayments = new List<FloatPayment>()
+                 {
+                     new FloatPayment()
+                     {
+                         Id = Guid.NewGuid(),
+                         Reference = "Ref12445",
+                         Amount = 100.00,
+                         Balance = 100.00,
+                         CreatedDate = DateTime.UtcNow,
+                         Currency = "ZAR"
+                     },
+                     new FloatPayment()
+                     {
+                         Id = Guid.NewGuid(),
+                         Reference = "Ref12446",
+                         Amount = 200.00,
+                         Balance = 300.00,
+                         CreatedDate = DateTime.UtcNow,
+                         Currency = "ZAR"
+                     },
+                     new FloatPayment()
+                     {
+                         Id = Guid.NewGuid(),
+                         Reference = "REFBOWK6D",
+                         Amount = 150.00,
+                         Balance = 450.00,
+                         CreatedDate = DateTime.UtcNow,
+                         Currency = "ZAR"
+                     }
+                 }
+            };
+            return _float;
         }
     }
 }

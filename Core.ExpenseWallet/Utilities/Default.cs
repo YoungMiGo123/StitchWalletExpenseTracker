@@ -33,5 +33,13 @@ namespace Core.ExpenseWallet.Utilities
         {
             Bearer = 1
         }
+        public static List<FloatPayment> GetDefaultFloatPayments()
+        {
+            return new List<FloatPayment>();
+          
+        }
+       
+        public static string DefaultCurrency => "ZAR";
+        public static string DefaultTopUpErrorMessage => "Something went wrong during the top up, please try again ?";
     }
 }

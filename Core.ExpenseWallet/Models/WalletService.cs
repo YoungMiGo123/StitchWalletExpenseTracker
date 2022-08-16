@@ -17,22 +17,29 @@ namespace Core.ExpenseWallet.Models
         private readonly IHttpService _httpService;
         private readonly IStitchSettings _stitchSettings;
         private readonly IInputOutputHelper _inputOutputHelper;
+        private readonly IFloatService _floatService;
 
-        public WalletService(ITokenBuilder tokenBuilder, IHttpService httpService, IStitchSettings stitchSettings, IInputOutputHelper inputOutputHelper)
+        public WalletService(ITokenBuilder tokenBuilder, IHttpService httpService, IStitchSettings stitchSettings, IInputOutputHelper inputOutputHelper, IFloatService floatService)
         {
             _tokenBuilder = tokenBuilder;
             _httpService = httpService;
             _stitchSettings = stitchSettings;
             _inputOutputHelper = inputOutputHelper;
+            _floatService = floatService;
         }
-        public WalletService()
-        {
-
-        }
+  
         public async Task<ExpenseWalletView> GetExpenseWalletView(string code)
         {
-            if (string.IsNullOrEmpty(code)) { throw new Exception("No code provided to get the token"); }
-            var token = await _tokenBuilder.GetTokenWithCode(code);
+            AuthenticationToken token;
+            if (string.IsNullOrEmpty(code)) 
+            {
+                token = GetDefaultAuthToken();
+                if(token == null) { throw new Exception("No code provided to get the token"); }
+            }
+            else
+            {
+                token = await _tokenBuilder.GetTokenWithCode(code);
+            }
             _inputOutputHelper.Write(SecurityUtilities.CodeJsonFilePath, JsonConvert.SerializeObject(token));
             var listBankAccounts = await GetStitchResponseAsync(GraphqlQueries.ListBankAccountTransactions, token);
             var listBankAcountEdges = listBankAccounts.data.user.bankAccounts.Where(x => x.transactions.edges.Any()).SelectMany(x => x.transactions.edges).Select(x => x.node).ToList();
@@ -45,7 +52,8 @@ namespace Core.ExpenseWallet.Models
                 Transactions = listBankAcountEdges.OrderBy(x => x.date).ToList(),
                 DebitOrders = debitOrders,
                 SalaryInformation = salaryInfoNodes ?? Default.GetSalaryInfo,
-                Income = salaryInfo?.data?.user?.income ?? Default.Income
+                Income = salaryInfo?.data?.user?.income ?? Default.Income,
+                FloatBalance = _floatService.GetFloatBalance()
             };
             return expenseView;
         }
@@ -94,6 +102,17 @@ namespace Core.ExpenseWallet.Models
             var tokenString = _inputOutputHelper.Read(SecurityUtilities.CodeJsonFilePath);
             var token = JsonConvert.DeserializeObject<AuthenticationToken>(tokenString);
             return token;
+        }
+
+        public TopUpWalletView GetTopUpWalletView()
+        {
+            var floatBalance = _floatService.GetFloatBalance();
+            var Float = _floatService.GetFloat();
+            return new TopUpWalletView
+            {
+                Float = Float,
+                FloatBalance = floatBalance
+            };
         }
     }
 }
