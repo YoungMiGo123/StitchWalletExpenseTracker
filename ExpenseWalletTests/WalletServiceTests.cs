@@ -13,6 +13,7 @@ namespace ExpenseWalletTests
         private Mock<IInputOutputHelper> _ioHelper;
         private Mock<IFloatService> _floatService;
         private Mock<ITokenBuilder> _tokenBuilder;
+        private Mock<IStitchRequestHelper> _stitchRequestHelper;
 
         public WalletServiceTests()
         {
@@ -22,13 +23,14 @@ namespace ExpenseWalletTests
             _ioHelper = new Mock<IInputOutputHelper>();
             _floatService = new Mock<IFloatService>();
             _tokenBuilder = new Mock<ITokenBuilder>();
+            _stitchRequestHelper = new Mock<IStitchRequestHelper>();
         }
         [Test]
         public async Task GetExpenseWalletViewWithInvalidCode()
         {
             var code = string.Empty;
             _ioHelper.Setup(x => x.Read(It.IsAny<string>())).Returns(string.Empty);
-            var walletService = new WalletService(_tokenBuilder.Object, _httpService.Object, _stitchSettings.Object, _ioHelper.Object, _floatService.Object);
+            var walletService = new WalletService(_tokenBuilder.Object, _httpService.Object, _stitchSettings.Object, _ioHelper.Object, _floatService.Object, _stitchRequestHelper.Object);
             try
             {
                 var result = await walletService.GetExpenseWalletView(code);

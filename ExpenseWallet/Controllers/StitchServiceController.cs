@@ -11,27 +11,39 @@ namespace ExpenseWallet.Controllers
 {
     public class StitchServiceController : Controller
     {
+        private readonly ILogger<StitchServiceController> _logger;
         private readonly IUrlService _urlService;
         private readonly IWalletService _walletService;
         private readonly IFloatService _floatService;
+        private readonly IStitchSettings _settings;
 
-        public StitchServiceController(IUrlService urlService, IWalletService walletService, IFloatService floatService)
+        public StitchServiceController(ILogger<StitchServiceController> logger, IUrlService urlService, IWalletService walletService, IFloatService floatService, IStitchSettings settings)
         {
+            _logger = logger;
             _urlService = urlService;
             _walletService = walletService;
             _floatService = floatService;
+            _settings = settings;
         }
 
         public async Task<IActionResult> Index()
         {
-            var url = await _urlService.BuildUrl();
-            return Redirect(url);
+            var link = await _urlService.BuildUrl(new RedirectUrlModel() { AuthorizationUrl = _settings.AuthorizeUrl });
+            return Redirect(link);
         }
         [HttpGet]
         [Route("return")]
         public async Task<IActionResult> Wallet(AuthenticationResponseModel responseModel)
         {
-            var vm = await _walletService.GetExpenseWalletView(responseModel.Code);
+            ExpenseWalletView vm = Default.GetDefaultExpenseWalletView();
+            try
+            {
+                vm = await _walletService.GetExpenseWalletView(responseModel.Code);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An exception happened while getting the wallet {ex}");
+            }
             return View(vm);
         }
         public IActionResult TopUp()
@@ -40,12 +52,69 @@ namespace ExpenseWallet.Controllers
             return View(vm);
         }
         [HttpPost]
-        public IActionResult TopUp(TopUpViewModel topUpViewModel)
+        public async Task<IActionResult> TopUp(TopUpViewModel topUpViewModel)
         {
-            var isValidTopUp = IsValidTopUpModel(topUpViewModel);
-            if (!isValidTopUp) { return View(topUpViewModel); }
-            var amount = Convert.ToDouble(topUpViewModel.Amount, CultureInfo.InvariantCulture);
+            try
+            {
+                if (!IsValidTopUpModel(topUpViewModel)) { return View(topUpViewModel); }
+                await AddFloatTopUp(topUpViewModel);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An exception happened while topping up the account {ex}");
+            }
+            return RedirectToAction("WalletTopUps");
+        }
+        public IActionResult WalletTopUps()
+        {
+            TopUpWalletView vm = Default.GetDefaultTopUpWalletView();
+            try {
+                vm = _walletService.GetTopUpWalletView();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An exception happened while getting the wallet top ups {ex}");
+            }
+            
+            return View(vm);
+        }
+        public async Task<IActionResult> ExpenseBreakDown()
+        {
+            TransactionCategoryView vm = Default.GetDefaultTransactionCategoryView;
+            try
+            {
+                vm = await _walletService.GetTransactionCategoryView();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An exception happened while getting the expense breakdown {ex}");
+            }
+            
+            return View(vm);
+        }
+        private bool IsValidTopUpModel(TopUpViewModel topUpViewModel)
+        {
+            var isValidTopUp = false;
+            try
+            {
+                var isValidAmount = SecurityUtilities.IsValidAmount(topUpViewModel.Amount);
+                var isValidReference = SecurityUtilities.IsValidReference(topUpViewModel.Reference);
+                if (!isValidAmount) { ModelState.AddModelError("Amount", "Amount is required and cannot be less than 0.01"); }
+                if (!isValidReference) { ModelState.AddModelError("Reference", "Reference is required, it must be less than 20 chars and cannot contain special characters"); }
+                isValidTopUp = isValidAmount || isValidReference;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error happened while validating the top up view model {ex}");
+            }
+            return isValidTopUp;
+        }
+
+        private async Task AddFloatTopUp(TopUpViewModel topUpViewModel)
+        {
+            
             var currentFloatBalance = _floatService.GetFloatBalance();
+            var amount = Convert.ToDouble(topUpViewModel.Amount, CultureInfo.InvariantCulture);
             var floatPayment = new FloatPayment()
             {
                 Amount = Math.Round(amount, 2, MidpointRounding.AwayFromZero),
@@ -55,30 +124,7 @@ namespace ExpenseWallet.Controllers
                 Id = Guid.NewGuid(),
                 Currency = Default.DefaultCurrency
             };
-            var addedSuccessfully = _floatService.AddFloatPayment(floatPayment);
-            if (!addedSuccessfully) {
-                topUpViewModel.Message = Default.DefaultTopUpErrorMessage;
-                return View(topUpViewModel); 
-            }
-            return RedirectToAction("WalletTopUps");
-        }
-        public IActionResult WalletTopUps()
-        {
-            var vm = _walletService.GetTopUpWalletView();
-            return View(vm);
-        }
-        public async Task<IActionResult> ExpenseBreakDown()
-        {
-            var vm = await _walletService.GetTransactionCategoryView();
-            return View(vm);
-        }
-        private bool IsValidTopUpModel(TopUpViewModel topUpViewModel)
-        {
-            var isValidAmount = SecurityUtilities.IsValidAmount(topUpViewModel.Amount);
-            var isValidReference = SecurityUtilities.IsValidReference(topUpViewModel.Reference);
-            if (!isValidAmount) { ModelState.AddModelError("Amount", "Amount is required and cannot be less than 0.01"); }
-            if (!isValidReference) { ModelState.AddModelError("Reference", "Reference is required, it must be less than 20 chars and cannot contain special characters"); }
-            return isValidAmount || isValidReference;
+            await _floatService.AddFloatPayment(floatPayment);
         }
     }
 }

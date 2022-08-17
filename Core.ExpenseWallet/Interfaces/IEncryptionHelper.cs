@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Core.ExpenseWallet.Interfaces
 {
-    public interface IUrlService
+    public interface IEncryptionHelper
     {
-        Task<string> BuildUrl(RedirectUrlModel redirectUrlModel);
+        public Task<AuthModel> GetAuthModel(bool useExistingValues = false);
     }
 }

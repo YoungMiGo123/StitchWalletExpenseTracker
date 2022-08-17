@@ -36,9 +36,9 @@
                             <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Submit</button>
                         </div>
                     </form>
-                    @if (string.IsNullOrEmpty(Model.Message))
+                    @if (Model.HasError)
                     {
-                        <span class="text-danger"></span>
+                        <span class="text-danger">@Model.Message</span>
                     }
                 </div>
             </div>

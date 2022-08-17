@@ -15,7 +15,7 @@ namespace ExpenseWalletTests
         public static AuthenticationToken AuthenticationToken()
         {
             var _inputOutputHelper = new IOHelper();
-            var tokenString = _inputOutputHelper.Read(SecurityUtilities.CodeJsonFilePath);
+            var tokenString = _inputOutputHelper.Read(SecurityUtilities.UserTokenJsonPath);
             var token = JsonConvert.DeserializeObject<AuthenticationToken>(tokenString);
             return token;
         }

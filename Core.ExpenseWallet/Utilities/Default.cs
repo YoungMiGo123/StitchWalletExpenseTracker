@@ -1,4 +1,6 @@
 ﻿using Core.ExpenseWallet.Data;
+using Core.ExpenseWallet.Models;
+using Core.ExpenseWallet.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +38,28 @@ namespace Core.ExpenseWallet.Utilities
         public static List<FloatPayment> GetDefaultFloatPayments()
         {
             return new List<FloatPayment>();
-          
         }
-       
+        public static TransactionCategoryView GetDefaultTransactionCategoryView => new TransactionCategoryView { BankAccounts = new List<BankAccount>(), TopSpendingCategories = new List<TransactionCategory>() };
+        public static ExpenseWalletView GetDefaultExpenseWalletView()
+        {
+            return new ExpenseWalletView
+            {
+                BankAccounts = new List<BankAccount>(),
+                DebitOrders = new List<Node>(),
+                FloatBalance = 0.0,
+                Income = new Income(),
+                SalaryInformation = new List<Node>(),
+                Transactions = new List<Node>()
+            };
+        }
+        public static TopUpWalletView GetDefaultTopUpWalletView()
+        {
+            return new TopUpWalletView
+            {
+                Float = new Float() { FloatPayments = GetDefaultFloatPayments() },
+                FloatBalance = 0.0
+            };
+        }
         public static string DefaultCurrency => "ZAR";
         public static string DefaultTopUpErrorMessage => "Something went wrong during the top up, please try again ?";
     }

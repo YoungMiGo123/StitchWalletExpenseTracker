@@ -131,5 +131,58 @@ namespace Core.ExpenseWallet.Utilities
              }
           }
         ";
+
+        public static string CreateAccountLinkingRequest =
+        @"
+           mutation CreateAccountLinkingRequest {
+             clientPaymentAuthorizationRequestCreate(input: {
+               beneficiary: {
+                 bankAccount: {
+                   name: ""Sample Account"", 
+                   bankId: absa, 
+                   accountNumber: ""1234567890"", 
+                   accountType: current, 
+                   beneficiaryType: private, 
+                   reference: ""TestBeneficiary""
+                 }
+             }, 
+              payer:
+              {
+                  email: ""sampleuser@example.com"",       
+                  name: ""Sample User"", 
+                  reference: ""TestPayer"",
+                  phoneNumber: ""27821234567""
+               }
+           })
+           {
+             authorizationRequestUrl
+           }
+         }
+
+        ";
+
+        public static string UserInitiatePayment =
+        @"
+           mutation UserInitiatePayment(
+               $amount: MoneyInput!,
+               $payerReference: String!,
+               $externalReference: String) {  
+             userInitiatePayment(input: {
+                 amount: $amount,
+                 payerReference: $payerReference,
+                 externalReference: $externalReference
+               }) {
+               paymentInitiation {
+                 amount
+                 date
+                 id
+                 status {
+                   __typename
+                 }
+               }
+             }
+           }
+        ";
+
     }
 }

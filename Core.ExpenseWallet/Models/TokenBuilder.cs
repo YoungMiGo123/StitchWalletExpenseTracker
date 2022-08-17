@@ -18,15 +18,17 @@ namespace Core.ExpenseWallet.Models
     public class TokenBuilder : ITokenBuilder
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IEncryptionHelper _encryptionHelper;
         private readonly IStitchSettings _stitchSettings;
         private readonly IHttpService _httpService;
-        private readonly IInputOutputHelper _inputOutputHelper;
-        public TokenBuilder(IHostingEnvironment  hostingEnvironment, IStitchSettings stitchSettings, IHttpService httpService, IInputOutputHelper inputOutputHelper)
+
+        public TokenBuilder(IHostingEnvironment  hostingEnvironment,IEncryptionHelper encryptionHelper, IStitchSettings stitchSettings, IHttpService httpService)
         {
             _hostingEnvironment = hostingEnvironment;
+            _encryptionHelper = encryptionHelper;
             _stitchSettings = stitchSettings;
             _httpService = httpService;
-            _inputOutputHelper = inputOutputHelper; 
+        
         }
         private string GetToken()
         {
@@ -39,7 +41,7 @@ namespace Core.ExpenseWallet.Models
             var jti = $"{Guid.NewGuid()}"; 
             var issuedAt = $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
             var notBefore = now;
-            var expiresAt = now + TimeSpan.FromSeconds(3000); 
+            var expiresAt = now + TimeSpan.FromSeconds(8000); 
 
             var token = new JwtSecurityToken(
                 issuer,
@@ -65,14 +67,34 @@ namespace Core.ExpenseWallet.Models
 
         public async Task<AuthenticationToken> GetTokenWithCode(string code)
         {
-            var authModel = JsonConvert.DeserializeObject<AuthModel>(_inputOutputHelper.Read(SecurityUtilities.JsonFilePath));
+            var authModel = await _encryptionHelper.GetAuthModel(useExistingValues: true);
             var assertion = GetToken();
-            Dictionary<string, string> request = new Dictionary<string, string>()
+            var request = new Dictionary<string, string>()
             {
-                { "grant_type", _stitchSettings.GrantType },
+                {"grant_type", _stitchSettings.GrantType },
                 {"client_id", _stitchSettings.ClientId},
                 {"code", code },
-                {"redirect_uri", _stitchSettings.RedirectUrl },
+                {"redirect_uri", _stitchSettings.RedirectUrls.First() },
+                {"code_verifier", authModel.Verifier },
+                {"client_assertion", assertion },
+                {"client_assertion_type",_stitchSettings.AssertionType }
+            };
+            string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
+            var token = await _httpService.PostWithBody<AuthenticationToken>(_stitchSettings.AudienceUrl, jsonBody);
+            return token;
+       
+        }
+
+        public async Task<AuthenticationToken> GetClientToken()
+        {
+            var authModel = await _encryptionHelper.GetAuthModel(useExistingValues: true);
+            var assertion = GetToken();
+            var request = new Dictionary<string, string>()
+            {
+                {"grant_type", "client_credentials"},
+                {"client_id", _stitchSettings.ClientId},
+                {"audience", _stitchSettings.AudienceUrl},
+                {"scope", "client_paymentauthorizationrequest" },
                 {"code_verifier", authModel.Verifier },
                 {"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
@@ -80,7 +102,27 @@ namespace Core.ExpenseWallet.Models
             string jsonBody = String.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
             var token = await _httpService.PostWithBody<AuthenticationToken>(_stitchSettings.AudienceUrl, jsonBody);
             return token;
-       
+
+        }
+
+        public async Task<AuthenticationToken> GetTokenWithCode(string code, bool useExistingAuth)
+        {
+            var authModel = await _encryptionHelper.GetAuthModel(useExistingValues: useExistingAuth);
+            var assertion = GetToken();
+            var request = new Dictionary<string, string>()
+            {
+                {"grant_type", _stitchSettings.GrantType },
+                {"client_id", _stitchSettings.ClientId},
+                {"code", code },
+                {"redirect_uri", _stitchSettings.RedirectUrls.Last() },
+                {"code_verifier", authModel.Verifier },
+                {"client_assertion", assertion },
+                {"client_assertion_type",_stitchSettings.AssertionType }
+            };
+            string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
+            var token = await _httpService.PostWithBody<AuthenticationToken>(_stitchSettings.AudienceUrl, jsonBody);
+            return token;
+
         }
     }
 }

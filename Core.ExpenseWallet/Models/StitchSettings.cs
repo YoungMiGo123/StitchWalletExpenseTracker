@@ -10,11 +10,12 @@ namespace Core.ExpenseWallet.Models
     public class StitchSettings : IStitchSettings
     {
         public string ClientId { get; set; }
-        public string RedirectUrl { get ; set ; }
+        public IEnumerable<string> RedirectUrls { get ; set ; }
         public IEnumerable<string> Scopes { get ; set ; }
         public string GraphqlUrl { get; set; }
         public string AudienceUrl { get; set; }
         public string AssertionType { get; set; }
         public string GrantType { get; set; }
+        public string AuthorizeUrl { get; set; }
     }
 }

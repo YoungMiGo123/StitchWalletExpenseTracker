@@ -20,7 +20,12 @@ namespace ExpenseWalletTests
         public FloatServiceTests()
         {
             _inputOutputHelperMock = new Mock<IInputOutputHelper>();
-            _floatService = new FloatService(_inputOutputHelperMock.Object);
+            var tokenBuilderMock = new Mock<ITokenBuilder>();
+            var stitckHelper = new Mock<IStitchRequestHelper>();
+            var urlService = new Mock<IUrlService>();
+            var stitchSettings = new Mock<IStitchSettings>();
+            var httpService = new Mock<IHttpService>();
+            _floatService = new FloatService(_inputOutputHelperMock.Object, stitchSettings.Object, tokenBuilderMock.Object, stitckHelper.Object, urlService.Object, httpService.Object);
         }
 
         [SetUp]
@@ -45,16 +50,16 @@ namespace ExpenseWalletTests
             Assert.That(floatBalance == lastPayment.Balance, Is.True);
         }
         [Test]
-        public void AddValidFloatPaymentTest()
+        public async Task AddValidFloatPaymentTest()
         {
-            var result = _floatService.AddFloatPayment(Faker.GetValidFloatPayment());
-            Assert.IsTrue(result);
+            var result = await _floatService.AddFloatPayment(Faker.GetValidFloatPayment());
+            Assert.That(result != null, Is.True);
         }
         [Test]
-        public void AddInvalidFloatPaymentTest()
+        public async Task AddInvalidFloatPaymentTest()
         {
-            var result = _floatService.AddFloatPayment(Faker.GetInvalidFloatPayment());
-            Assert.IsFalse(result);
+            var result = await _floatService.AddFloatPayment(Faker.GetInvalidFloatPayment());
+            Assert.That(result != null, Is.True);
         }
     }
 }

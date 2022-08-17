@@ -7,45 +7,38 @@ namespace Core.ExpenseWallet.Models
     public class UrlService : IUrlService
     {
 
-        private readonly IInputOutputHelper _inputOutputHelper;
+ 
         private readonly IStitchSettings _stitchSettings;
-        public UrlService(IStitchSettings stitchSettings, IInputOutputHelper inputOutputHelper)
+        private readonly IEncryptionHelper _encryption;
+
+        public UrlService(IStitchSettings stitchSettings, IEncryptionHelper encryption)
         {
-            _inputOutputHelper = inputOutputHelper;
             _stitchSettings = stitchSettings;
+            _encryption = encryption;
         }
-        public async Task<string> BuildUrl()
+        public async Task<string> BuildUrl(RedirectUrlModel redirectUrlModel)
         {
-            var challenge = await SecurityUtilities.GenerateVerifierChallengePair();
-            var state = SecurityUtilities.GetStateOrNonce();
-            var nonce = SecurityUtilities.GetStateOrNonce();
-            var authModel = new AuthModel()
-            {
-                Challenge = challenge.Challenge,
-                Nonce = nonce,
-                State = state,
-                Verifier = challenge.Verfier
-            };
-            var url = GetUrl(authModel);
+            var authModel = await _encryption.GetAuthModel(redirectUrlModel.UseExistingAuthModel);
+            var redirectUrl = string.IsNullOrEmpty(redirectUrlModel.RedirectUrl) ? _stitchSettings.RedirectUrls.First() : redirectUrlModel.RedirectUrl;
+            var url = GetUrl(redirectUrlModel.AuthorizationUrl, redirectUrl, authModel);
             authModel.AuthenticationUrl = url;
-            _inputOutputHelper.Write(SecurityUtilities.JsonFilePath, JsonConvert.SerializeObject(authModel));
             return url;
         }
-        private string GetUrl(AuthModel authModel)
+        private string GetUrl(string authorizationUrl, string redirectUrl, AuthModel authModel)
         {
             var search = new Dictionary<string, string>
             {
                 { "client_id", _stitchSettings.ClientId },
                 { "code_challenge", authModel.Challenge },
                 { "code_challenge_method", "S256" },
-                { "redirect_uri", _stitchSettings.RedirectUrl },
+                { "redirect_uri", redirectUrl },
                 { "scope", string.Join(" ", _stitchSettings.Scopes) },
                 { "response_type", "code" },
                 { "nonce", authModel.Nonce },
                 { "state", authModel.State }
             };
             var searchString = string.Join("&", search.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
-            return $"https://secure.stitch.money/connect/authorize?{searchString}";
+            return $"{authorizationUrl}?{searchString}";
         }
     }
 }

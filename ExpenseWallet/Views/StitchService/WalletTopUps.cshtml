@@ -1,6 +1,10 @@
-﻿@using Core.ExpenseWallet.Utilities
+﻿@using Core.ExpenseWallet.Interfaces
+@using Core.ExpenseWallet.Utilities
 @model TopUpWalletView
-
+@inject IStitchSettings _stitchSettings
+@{
+     var topUpUrl = _stitchSettings.RedirectUrls.Last().Replace("return", "LinkAccount");
+}
 <div class="row" style="margin-bottom:30px;">
 
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
@@ -23,7 +27,7 @@
 
 
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <a asp-action="TopUp" asp-controller="StitchService">
+        <a href="@topUpUrl">
             <div class="card">
                 <div class="card-header p-3 pt-2">
                     <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
@@ -67,6 +71,7 @@
                                 <th style="text-align:center">Id</th>
                                 <th style="text-align:center">Currency</th>
                                 <th style="text-align:center">Amount</th>
+                                <th style="text-align:center">Status</th>
                                 <th style="text-align:center">Balance</th>
                                 <th style="text-align:center">Reference</th>
                                 <th style="text-align:center">Created Date</th>
@@ -90,6 +95,9 @@
                                     </td>
                                     <td>
                                         <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Amount</h6>
+                                    </td>
+                                        <td>
+                                        <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Status</h6>
                                     </td>
                                     <td>
                                         <h6 class="mb-0 text-sm" style="text-align:center;">@floatPayment.Balance</h6>

@@ -1,12 +1,15 @@
 ﻿@using System.Globalization
+@using Core.ExpenseWallet.Interfaces
+@using Core.ExpenseWallet.Models
 @using Core.ExpenseWallet.Utilities
 @model ExpenseWalletView
-
+@inject IStitchSettings _stitchSettings
 @{
     ViewBag.Title = "Dashboard";
     var salaryNode = Model.SalaryInformation?.First();
     var salaryDate = $"{@salaryNode?.nextSalaryPaymentExpectedDate:dd-MM-yyyy}";
     var nextSalaryInDays = Convert.ToDouble(salaryNode?.nextSalaryPaymentStandardDeviationInDays ?? "0", CultureInfo.InvariantCulture).ToString("F");
+    var topUpUrl = _stitchSettings.RedirectUrls.Last().Replace("return", "LinkAccount");
 }
 <div class="row" style="margin-bottom:30px;">
     <div class="col-12">
@@ -94,7 +97,7 @@
 
 <div class="row" style="margin-bottom: 30px;">
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <a asp-action="TopUp" asp-controller="StitchService">
+        <a href="@topUpUrl">
             <div class="card">
                 <div class="card-header p-3 pt-2">
                     <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">

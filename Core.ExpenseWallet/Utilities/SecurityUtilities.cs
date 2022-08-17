@@ -49,8 +49,10 @@ namespace Core.ExpenseWallet
             if(amt < 0.01) { return false; }
             return true;
         }
-        public static string JsonFilePath = "StitchSession.json";
-        public static string CodeJsonFilePath = "CodeToken.json";
+        public static string StitchSettingsJsonPath = "StitchSession.json";
+        public static string UserTokenJsonPath = "UserToken.json";
+        public static string ClientTokenJsonPath = "ClientTokens.json";
+        public static string FloatsJsonPath = "Floats.json";
     }
 
     public class VerifiedChallenge

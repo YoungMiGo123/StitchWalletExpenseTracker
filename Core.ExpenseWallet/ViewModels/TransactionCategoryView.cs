@@ -5,7 +5,7 @@ namespace Core.ExpenseWallet.ViewModels
 {
     public class TransactionCategoryView
     {
-        public IEnumerable<BankAccount> BankAccounts { get; internal set; }
-        public IEnumerable<TransactionCategory> TopSpendingCategories { get; internal set; }
+        public IEnumerable<BankAccount> BankAccounts { get;  set; }
+        public IEnumerable<TransactionCategory> TopSpendingCategories { get;  set; }
     }
 }

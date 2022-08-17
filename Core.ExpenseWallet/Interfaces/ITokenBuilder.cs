@@ -10,5 +10,8 @@ namespace Core.ExpenseWallet.Interfaces
     public interface ITokenBuilder
     {
         Task<AuthenticationToken> GetTokenWithCode(string code);
+        Task<AuthenticationToken> GetTokenWithCode(string code, bool useExistingAuth);
+        Task<AuthenticationToken> GetClientToken();
+    
     }
 }

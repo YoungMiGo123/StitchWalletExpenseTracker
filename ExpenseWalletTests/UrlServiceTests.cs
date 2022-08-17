@@ -1,4 +1,5 @@
 ﻿using Core.ExpenseWallet.Interfaces;
+using Core.ExpenseWallet.Models;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace ExpenseWalletTests
         [Test]
         public async Task BuildCorrectAuthorizationUrl()
         {
-            _urlService.Setup(x => x.BuildUrl()).ReturnsAsync(Faker.AuthorizationUrl());
+            _urlService.Setup(x => x.BuildUrl(It.IsAny<RedirectUrlModel>())).ReturnsAsync(Faker.AuthorizationUrl());
             var urlService = _urlService.Object;
-            var authUrl = await urlService.BuildUrl();
+            var authUrl = await urlService.BuildUrl(new RedirectUrlModel());
             Assert.True(!string.IsNullOrEmpty(authUrl));
         }
     }

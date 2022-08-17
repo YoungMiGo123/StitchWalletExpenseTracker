@@ -43,11 +43,28 @@ namespace Core.ExpenseWallet.Data
         public string quantity { get; set; }
         public string currency { get; set; }
     }
+    public class Status
+    {
+        public string __typename { get; set; }
+    }
 
+    public class UserInitiatePayment
+    {
+        public PaymentInitiation paymentInitiation { get; set; }
+    }
+    public class PaymentInitiation
+    {
+        public Amount amount { get; set; }
+        public DateTime date { get; set; }
+        public string id { get; set; }
+        public Status status { get; set; }
+    }
     public class Data
     {
         public User user { get; set; }
         public List<TransactionCategory> transactionCategories { get; set; }
+        public ClientPaymentAuthorizationRequestCreate clientPaymentAuthorizationRequestCreate { get; set; }
+        public UserInitiatePayment userInitiatePayment { get; set; }
     }
 
     public class Edge
@@ -83,6 +100,10 @@ namespace Core.ExpenseWallet.Data
     public class StitchResponse
     {
         public Data data { get; set; }
+    }
+    public class ClientPaymentAuthorizationRequestCreate
+    {
+        public string authorizationRequestUrl { get; set; }
     }
 
     public class RunningBalance
