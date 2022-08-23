@@ -32,7 +32,9 @@ namespace Core.ExpenseWallet.Models
         }
         private string GetToken()
         {
-            var path = @$"{_hostingEnvironment.WebRootPath}\Keys\certificate.pem";
+            var slashType = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() ? "/" : @"\";
+
+            var path = @$"{_hostingEnvironment.WebRootPath}{slashType}Keys{slashType}certificate.pem";
             var cert = X509Certificate2.CreateFromPemFile(path);
             var now = DateTime.UtcNow;
             var audience = _stitchSettings.AudienceUrl;
@@ -76,7 +78,7 @@ namespace Core.ExpenseWallet.Models
                 {"code", code },
                 {"redirect_uri", _stitchSettings.RedirectUrls.First() },
                 {"code_verifier", authModel.Verifier },
-                {"client_assertion", assertion },
+                {"client_secret", _stitchSettings.ClientSecret },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
@@ -96,7 +98,7 @@ namespace Core.ExpenseWallet.Models
                 {"audience", _stitchSettings.AudienceUrl},
                 {"scope", "client_paymentauthorizationrequest" },
                 {"code_verifier", authModel.Verifier },
-                {"client_assertion", assertion },
+                {"client_secret", _stitchSettings.ClientSecret },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = String.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
@@ -116,7 +118,7 @@ namespace Core.ExpenseWallet.Models
                 {"code", code },
                 {"redirect_uri", _stitchSettings.RedirectUrls.Last() },
                 {"code_verifier", authModel.Verifier },
-                {"client_assertion", assertion },
+                {"client_secret", _stitchSettings.ClientSecret },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));

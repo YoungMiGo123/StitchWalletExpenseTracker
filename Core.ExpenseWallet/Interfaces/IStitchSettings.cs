@@ -16,5 +16,6 @@ namespace Core.ExpenseWallet.Interfaces
         public string AudienceUrl { get; set; }
         public string AssertionType { get; set; }
         public string GrantType { get; set; }
+        public string ClientSecret { get; set; }
     }
 }

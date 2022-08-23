@@ -17,5 +17,6 @@ namespace Core.ExpenseWallet.Models
         public string AssertionType { get; set; }
         public string GrantType { get; set; }
         public string AuthorizeUrl { get; set; }
+        public string ClientSecret { get; set; }
     }
 }
