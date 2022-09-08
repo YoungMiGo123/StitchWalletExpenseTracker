@@ -54,7 +54,44 @@ namespace ExpenseWalletTests
                 Reference = "REFx7RQgn"
             };
         }
+        public static List<Error> GetMockErrors()
+        {
+            return new List<Error>
+            {
+                new Error
+                {
+                    Extensions = new Extensions
+                    {
+                        code = "USER_INTERACTION_REQUIRED",
+                        userInteractionUrl = "https://secure.stitch.money/connect/payment-request/3991a32d-6d82-467e-ae47-5345022adc63",
+                        id = "cGF5aW5pdC8zOTkxYTMyZC02ZDgyLTQ2N2UtYWU0Ny01MzQ1MDIyYWRjNjM="
+                    },
+                    Message = "Multifactor Required to continue payment."
+                }
+            };
+        }
+        public static int GetRandomNumber(int lowerLimit, int upperLimit)
+        {
+            return new Random().Next(lowerLimit, upperLimit);
+        }
+        public static StitchResponse GetMockSuccessStitchResponse()
+        {
+            return new StitchResponse
+            {
+                data = new Data
+                {
+                    userInitiatePayment = new UserInitiatePayment
+                    {
+                        paymentInitiation = new PaymentInitiation
+                        {
+                            amount = new Amount { currency = "ZAR", quantity = $"{Faker.GetRandomNumber(1, 1000)}" },
+                            status = new Status { __typename = "PaymentInitiationCompleted" }
+                        }
 
+                    }
+                }
+            };
+        }
         public static Float GetValidFloat()
         {
             var _float = new Float()

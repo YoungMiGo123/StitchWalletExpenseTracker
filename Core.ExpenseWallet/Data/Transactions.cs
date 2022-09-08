@@ -120,7 +120,7 @@ namespace Core.ExpenseWallet.Data
     {
         public Data data { get; set; }
         public List<Error> Errors { get; set; }
-        public bool HasErrors => Errors != null && Errors.Any();
+        public bool HasErrors => Errors != null && Errors.Any(x => x.Extensions.code == "USER_INTERACTION_REQUIRED");
     }
     public class ClientPaymentAuthorizationRequestCreate
     {

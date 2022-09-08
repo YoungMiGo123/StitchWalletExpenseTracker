@@ -11,11 +11,7 @@ namespace ExpenseWalletTests
         {
             _tokenBuilder = new Mock<ITokenBuilder>();
         }
-        [SetUp]
-        public void Setup()
-        {
-        }
-
+      
         [Test]
         public async Task GetTokenWithInvalidCode()
         {

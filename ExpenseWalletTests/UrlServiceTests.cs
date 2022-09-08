@@ -16,10 +16,6 @@ namespace ExpenseWalletTests
         {
             _urlService = new Mock<IUrlService>();
         }
-        [SetUp]
-        public void Setup()
-        {
-        }
         [Test]
         public async Task BuildCorrectAuthorizationUrl()
         {

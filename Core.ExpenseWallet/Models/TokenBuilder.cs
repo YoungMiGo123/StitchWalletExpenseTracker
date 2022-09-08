@@ -99,7 +99,7 @@ namespace Core.ExpenseWallet.Models
                 {"audience", _stitchSettings.AudienceUrl},
                 {"scope", "client_paymentauthorizationrequest" },
                 {"code_verifier", authModel.Verifier },
-               // {"client_secret", _stitchSettings.ClientSecret },
+                //{"client_secret", _stitchSettings.ClientSecret },
                 {"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
@@ -120,8 +120,8 @@ namespace Core.ExpenseWallet.Models
                 {"code", code },
                 {"redirect_uri", _stitchSettings.RedirectUrls.Last() },
                 {"code_verifier", authModel.Verifier },
-                //{"client_secret", _stitchSettings.ClientSecret },
-                {"client_assertion", assertion },
+                {"client_secret", _stitchSettings.ClientSecret },
+                //{"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
