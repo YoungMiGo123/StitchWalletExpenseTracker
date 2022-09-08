@@ -16,14 +16,16 @@ namespace ExpenseWallet.Controllers
         private readonly IWalletService _walletService;
         private readonly IFloatService _floatService;
         private readonly IStitchSettings _settings;
+        private readonly IPaymentService _paymentService;
 
-        public StitchServiceController(ILogger<StitchServiceController> logger, IUrlService urlService, IWalletService walletService, IFloatService floatService, IStitchSettings settings)
+        public StitchServiceController(ILogger<StitchServiceController> logger, IUrlService urlService, IWalletService walletService, IFloatService floatService, IStitchSettings settings, IPaymentService paymentService)
         {
             _logger = logger;
             _urlService = urlService;
             _walletService = walletService;
             _floatService = floatService;
             _settings = settings;
+            _paymentService = paymentService;
         }
 
         public async Task<IActionResult> Index()
@@ -57,7 +59,11 @@ namespace ExpenseWallet.Controllers
             try
             {
                 if (!IsValidTopUpModel(topUpViewModel)) { return View(topUpViewModel); }
-                await AddFloatTopUp(topUpViewModel);
+                var result = await AddFloatTopUp(topUpViewModel);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return Redirect(result);
+                }
             }
             catch(Exception ex)
             {
@@ -92,6 +98,21 @@ namespace ExpenseWallet.Controllers
             
             return View(vm);
         }
+        [Route("HandleMfaTopUp")]
+        [HttpGet]
+        public IActionResult HandleMfaTopUp(MfaTopUpResponseModel mfaTopUpResponseModel)
+        {
+            try
+            {
+                _floatService.AddFloatPayment(mfaTopUpResponseModel);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An exception happened while mfa top uo {ex}");
+            }
+           
+            return RedirectToAction("WalletTopUps");
+        }
         private bool IsValidTopUpModel(TopUpViewModel topUpViewModel)
         {
             var isValidTopUp = false;
@@ -110,7 +131,7 @@ namespace ExpenseWallet.Controllers
             return isValidTopUp;
         }
 
-        private async Task AddFloatTopUp(TopUpViewModel topUpViewModel)
+        private async Task<string> AddFloatTopUp(TopUpViewModel topUpViewModel)
         {
             
             var currentFloatBalance = _floatService.GetFloatBalance();
@@ -124,7 +145,14 @@ namespace ExpenseWallet.Controllers
                 Id = Guid.NewGuid(),
                 Currency = Default.DefaultCurrency
             };
-            await _floatService.AddFloatPayment(floatPayment);
+            var stitchResponse = await _paymentService.GetPaymentInitiation(floatPayment);
+            if (stitchResponse.HasErrors)
+            {
+                var mfaAuthUrl = _paymentService.GetMultifactorPaymentIniationUrl(stitchResponse);
+                return mfaAuthUrl;
+            }
+            await _floatService.AddFloatPayment(floatPayment,stitchResponse);
+            return string.Empty;
         }
     }
 }

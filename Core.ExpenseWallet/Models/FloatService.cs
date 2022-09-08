@@ -56,16 +56,20 @@ namespace Core.ExpenseWallet.Models
             var authorizationRequestUrl = linkingRequest.data.clientPaymentAuthorizationRequestCreate.authorizationRequestUrl;
             return authorizationRequestUrl;
         }
-
-        private PaymentInitiationStatus GetPaymentInitiationStatus(string status)
+        public async Task<FloatPayment> AddFloatPayment(FloatPayment payment, StitchResponse stitchResponse)
         {
-            switch (status)
+            if (!isValidFloatPayment(payment)) { return payment; }
+            var paymentInitiationResult = stitchResponse.data.userInitiatePayment.paymentInitiation;
+            if (paymentInitiationResult != null)
             {
-                case "PaymentInitiationCompleted": return PaymentInitiationStatus.PaymentInitiationCompleted;
-                case "USER_INTERACTION_REQUIRED": return PaymentInitiationStatus.PaymentInitiationPending;
-                default: return PaymentInitiationStatus.PaymentInitiationFailed;
+                payment.Status = PaymentUtilities.GetPaymentInitiationStatus(paymentInitiationResult.status.__typename);
+                var currentFloat = GetCurrentFloat();
+                currentFloat.AddFloatPayment(payment);
+                _inputOutputHelper.Write(SecurityUtilities.FloatsJsonPath, JsonConvert.SerializeObject(currentFloat));
             }
+            return payment;
         }
+    
         private bool isValidFloatPayment(FloatPayment payment)
         {
             var isValidAmount = SecurityUtilities.IsValidAmount($"{payment.Amount}".Replace(",", "."));
@@ -74,19 +78,7 @@ namespace Core.ExpenseWallet.Models
             return isValidFloatPayment;
         }
 
-        private async Task<PaymentInitiation> GetPaymentInitiation(FloatPayment payment, AuthenticationToken authenticationToken)
-        {
-            var paymentVars = new
-            {
-                amount = new { quantity = payment.Amount, currency = payment.Currency },
-                payerReference = payment.Reference,
-                externalReference = payment.Reference
-            };
-            var defaultToken = authenticationToken;
-            var paymentInitiationResponse = await _stitchRequestHelper.GetStitchResponseWithVariablesAsync<StitchResponse>(GraphqlQueries.UserInitiatePayment, JsonConvert.SerializeObject(paymentVars), defaultToken);
-            var paymentInitiationResult = paymentInitiationResponse.data.userInitiatePayment.paymentInitiation;
-            return paymentInitiationResult;
-        }
+     
         private Float GetCurrentFloat()
         {
             var input = _inputOutputHelper.Read(SecurityUtilities.FloatsJsonPath);
@@ -98,29 +90,15 @@ namespace Core.ExpenseWallet.Models
             return currentFloat;
         }
 
-        public async Task<FloatPayment> AddFloatPayment(FloatPayment payment)
+        public FloatPayment AddFloatPayment(MfaTopUpResponseModel mfaTopUpResponseModel)
         {
-            if (!isValidFloatPayment(payment)) { return payment; }
-            var url = _stitchSettings.RedirectUrls.Last().Replace("return", "GetAuthenticationToken");
-            var authToken = await _httpService.Get<AuthenticationToken>(url);
-            var paymentInitiationResult = await GetPaymentInitiation(payment, authToken);
-            if (paymentInitiationResult != null)
-            {
-                var floatPayment = new FloatPayment
-                {
-                    Amount = Convert.ToDouble(paymentInitiationResult.amount.quantity, CultureInfo.InvariantCulture),
-                    Balance = payment.Balance,
-                    CreatedDate = paymentInitiationResult.date,
-                    Currency = payment.Currency,
-                    Id = payment.Id,
-                    Reference = payment.Reference,
-                    Status = GetPaymentInitiationStatus(paymentInitiationResult.status.__typename)
-                };
-                var currentFloat = GetCurrentFloat();
-                currentFloat.AddFloatPayment(floatPayment);
-                _inputOutputHelper.Write(SecurityUtilities.FloatsJsonPath, JsonConvert.SerializeObject(currentFloat));
-            }
-            return payment;
+            var paymentJson = _inputOutputHelper.Read(SecurityUtilities.MfaRequiredTopUps);
+            var floatPayment = JsonConvert.DeserializeObject<FloatPayment>(paymentJson);
+            floatPayment.Status = mfaTopUpResponseModel.paymentInitiationStatus;
+            var currentFloat = GetCurrentFloat();
+            currentFloat.AddFloatPayment(floatPayment);
+            _inputOutputHelper.Write(SecurityUtilities.FloatsJsonPath, JsonConvert.SerializeObject(currentFloat));
+            return floatPayment;
         }
     }
 }

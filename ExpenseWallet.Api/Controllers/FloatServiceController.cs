@@ -1,7 +1,6 @@
 ﻿using Core.ExpenseWallet;
 using Core.ExpenseWallet.Interfaces;
 using Core.ExpenseWallet.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -16,7 +15,7 @@ namespace ExpenseWallet.Api.Controllers
         private readonly IInputOutputHelper _inputOutputHelper;
         private readonly ITokenBuilder _tokenBuilder;
 
-        public FloatServiceController(ILogger<FloatServiceController> logger,IFloatService floatService,  IUrlService urlService, IStitchSettings settings, IInputOutputHelper inputOutputHelper, ITokenBuilder tokenBuilder)
+        public FloatServiceController(ILogger<FloatServiceController> logger, IFloatService floatService, IUrlService urlService, IStitchSettings settings, IInputOutputHelper inputOutputHelper, ITokenBuilder tokenBuilder)
         {
             _logger = logger;
             _floatService = floatService;
@@ -31,7 +30,7 @@ namespace ExpenseWallet.Api.Controllers
         {
             var paymentAuthorizationUrl = await _floatService.GetPaymentAuthorizationUrl();
             var redirectUrl = _settings.RedirectUrls.Last();
-            var link = await _urlService.BuildUrl(new RedirectUrlModel { AuthorizationUrl = paymentAuthorizationUrl, RedirectUrl = redirectUrl, UseExistingAuthModel = true});
+            var link = await _urlService.BuildUrl(new RedirectUrlModel { AuthorizationUrl = paymentAuthorizationUrl, RedirectUrl = redirectUrl, UseExistingAuthModel = true });
             return Redirect(link);
         }
         [HttpGet]
@@ -43,7 +42,7 @@ namespace ExpenseWallet.Api.Controllers
                 var userToken = await _tokenBuilder.GetTokenWithCode(responseModel.Code, useExistingAuth: true);
                 _inputOutputHelper.Write(SecurityUtilities.UserTokenJsonPath, JsonConvert.SerializeObject(userToken));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"An exception happened while getting the token {ex}");
             }
@@ -60,9 +59,9 @@ namespace ExpenseWallet.Api.Controllers
                 var authenticationResponseModel = _inputOutputHelper.Read(SecurityUtilities.UserTokenJsonPath);
                 result = JsonConvert.DeserializeObject<AuthenticationToken>(authenticationResponseModel);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError($"An exception happened while getting the token {ex}");;
+                _logger.LogError($"An exception happened while getting the token {ex}"); ;
             }
             return Ok(result);
         }

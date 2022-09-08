@@ -22,13 +22,13 @@ namespace Core.ExpenseWallet.Models
         private readonly IStitchSettings _stitchSettings;
         private readonly IHttpService _httpService;
 
-        public TokenBuilder(IHostingEnvironment  hostingEnvironment,IEncryptionHelper encryptionHelper, IStitchSettings stitchSettings, IHttpService httpService)
+        public TokenBuilder(IHostingEnvironment hostingEnvironment, IEncryptionHelper encryptionHelper, IStitchSettings stitchSettings, IHttpService httpService)
         {
             _hostingEnvironment = hostingEnvironment;
             _encryptionHelper = encryptionHelper;
             _stitchSettings = stitchSettings;
             _httpService = httpService;
-        
+
         }
         private string GetToken()
         {
@@ -40,10 +40,10 @@ namespace Core.ExpenseWallet.Models
             var audience = _stitchSettings.AudienceUrl;
             var issuer = _stitchSettings.ClientId;
             var subject = _stitchSettings.ClientId;
-            var jti = $"{Guid.NewGuid()}"; 
+            var jti = $"{Guid.NewGuid()}";
             var issuedAt = $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
             var notBefore = now;
-            var expiresAt = now + TimeSpan.FromSeconds(8000); 
+            var expiresAt = now + TimeSpan.FromSeconds(8000);
 
             var token = new JwtSecurityToken(
                 issuer,
@@ -78,13 +78,14 @@ namespace Core.ExpenseWallet.Models
                 {"code", code },
                 {"redirect_uri", _stitchSettings.RedirectUrls.First() },
                 {"code_verifier", authModel.Verifier },
-                {"client_secret", _stitchSettings.ClientSecret },
+               // {"client_secret", _stitchSettings.ClientSecret },
+                {"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
             var token = await _httpService.PostWithBody<AuthenticationToken>(_stitchSettings.AudienceUrl, jsonBody);
             return token;
-       
+
         }
 
         public async Task<AuthenticationToken> GetClientToken()
@@ -98,7 +99,8 @@ namespace Core.ExpenseWallet.Models
                 {"audience", _stitchSettings.AudienceUrl},
                 {"scope", "client_paymentauthorizationrequest" },
                 {"code_verifier", authModel.Verifier },
-                {"client_secret", _stitchSettings.ClientSecret },
+               // {"client_secret", _stitchSettings.ClientSecret },
+                {"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = String.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
@@ -118,7 +120,8 @@ namespace Core.ExpenseWallet.Models
                 {"code", code },
                 {"redirect_uri", _stitchSettings.RedirectUrls.Last() },
                 {"code_verifier", authModel.Verifier },
-                {"client_secret", _stitchSettings.ClientSecret },
+                //{"client_secret", _stitchSettings.ClientSecret },
+                {"client_assertion", assertion },
                 {"client_assertion_type",_stitchSettings.AssertionType }
             };
             string jsonBody = string.Join("&", request.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));

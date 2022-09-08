@@ -1,10 +1,5 @@
 ﻿using Core.ExpenseWallet.Data;
 using Core.ExpenseWallet.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.ExpenseWallet.Interfaces
 {
@@ -13,6 +8,7 @@ namespace Core.ExpenseWallet.Interfaces
         public Task<string> GetPaymentAuthorizationUrl();
         public Float GetFloat();
         public double GetFloatBalance();
-        public Task<FloatPayment> AddFloatPayment(FloatPayment payment);
+        public Task<FloatPayment> AddFloatPayment(FloatPayment payment, StitchResponse stitchResponse);
+        public FloatPayment AddFloatPayment(MfaTopUpResponseModel mfaTopUpResponseModel);
     }
 }

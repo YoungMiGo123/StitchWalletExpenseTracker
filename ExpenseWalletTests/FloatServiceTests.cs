@@ -52,13 +52,13 @@ namespace ExpenseWalletTests
         [Test]
         public async Task AddValidFloatPaymentTest()
         {
-            var result = await _floatService.AddFloatPayment(Faker.GetValidFloatPayment());
+            var result = await _floatService.AddFloatPayment(Faker.GetValidFloatPayment(), new StitchResponse()) ;
             Assert.That(result != null, Is.True);
         }
         [Test]
         public async Task AddInvalidFloatPaymentTest()
         {
-            var result = await _floatService.AddFloatPayment(Faker.GetInvalidFloatPayment());
+            var result = await _floatService.AddFloatPayment(Faker.GetInvalidFloatPayment(), new StitchResponse());
             Assert.That(result != null, Is.True);
         }
     }

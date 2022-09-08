@@ -53,6 +53,7 @@ namespace Core.ExpenseWallet
         public static string UserTokenJsonPath = "UserToken.json";
         public static string ClientTokenJsonPath = "ClientTokens.json";
         public static string FloatsJsonPath = "Floats.json";
+        public static string MfaRequiredTopUps = "MfaRequiredTopUps.json";
     }
 
     public class VerifiedChallenge

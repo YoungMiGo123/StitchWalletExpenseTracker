@@ -96,10 +96,31 @@ namespace Core.ExpenseWallet.Data
         public string description { get; set; }
         public string probability { get; set; }
     }
+    public class Error
+    {
+        public List<Location> Locations { get; set; }
+        public string Message { get; set; }
+        public List<string> Path { get; set; }
+        public Extensions Extensions { get; set; }
+    }
+    public class Location
+    {
+        public int Column { get; set; }
+        public int Line { get; set; }
+    }
+
+    public class Extensions
+    {
+        public string userInteractionUrl { get; set; }
+        public string id { get; set; }
+        public string code { get; set; }
+    }
 
     public class StitchResponse
     {
         public Data data { get; set; }
+        public List<Error> Errors { get; set; }
+        public bool HasErrors => Errors != null && Errors.Any();
     }
     public class ClientPaymentAuthorizationRequestCreate
     {

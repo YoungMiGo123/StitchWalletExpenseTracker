@@ -19,6 +19,7 @@ builder.Services.AddSingleton<IEncryptionHelper, EncryptionHelper>();
 builder.Services.AddSingleton<IUrlService, UrlService>();
 builder.Services.AddSingleton<ITokenBuilder, TokenBuilder>();
 builder.Services.AddSingleton<IStitchRequestHelper, StitchRequestHelper>();
+builder.Services.AddSingleton<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<IFloatService, FloatService>();
 builder.Services.AddSingleton<IWalletService, WalletService>();
 
