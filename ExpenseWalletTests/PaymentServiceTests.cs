@@ -31,7 +31,6 @@ namespace ExpenseWalletTests
             _paymentService = new PaymentService(_stitchRequestHelperMock.Object, _httpServiceMock.Object, _stitchSettingsMock.Object, _inputOutputHelperMock.Object);
         }
 
-
         [Test]
         public async Task GetPaymentInitiationTest_WithoutErrors()
         {

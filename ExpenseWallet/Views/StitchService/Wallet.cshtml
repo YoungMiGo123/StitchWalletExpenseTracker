@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using Core.ExpenseWallet.Data
 @using Core.ExpenseWallet.Interfaces
 @using Core.ExpenseWallet.Models
 @using Core.ExpenseWallet.Utilities
@@ -6,7 +7,7 @@
 @inject IStitchSettings _stitchSettings
 @{
     ViewBag.Title = "Dashboard";
-    var salaryNode = Model.SalaryInformation?.First();
+    var salaryNode = Model.SalaryInformation?.FirstOrDefault() ?? new Node() ;
     var salaryDate = $"{@salaryNode?.nextSalaryPaymentExpectedDate:dd-MM-yyyy}";
     var nextSalaryInDays = Convert.ToDouble(salaryNode?.nextSalaryPaymentStandardDeviationInDays ?? "0", CultureInfo.InvariantCulture).ToString("F");
     var topUpUrl = _stitchSettings.RedirectUrls.Last().Replace("return", "LinkAccount");
